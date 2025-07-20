@@ -1,7 +1,7 @@
 resource "aws_instance" "main_ec2" {
     ami           = "ami-0150ccaf51ab55a51"  # Example AMI ID, replace with a valid one
     instance_type = "t2.micro"
-    security_groups = [aws_security_group.app_sg.id]
+    vpc_security_group_ids = [aws_security_group.app_sg.id]
     key_name      = aws_key_pair.my_kp.key_name
     subnet_id = var.subnet_id
     iam_instance_profile = var.instance_profile
@@ -69,9 +69,9 @@ resource "aws_security_group" "app_sg" {
   }
 
   egress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }

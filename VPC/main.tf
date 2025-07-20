@@ -50,3 +50,9 @@ resource "aws_route" "public_route" {
 
     depends_on = [aws_internet_gateway.main_gw]
 }
+
+# Create RTA
+resource "aws_route_table_association" "public_rta" {
+    subnet_id      = aws_subnet.public_subnet.id
+    route_table_id = aws_route_table.public_route_table.id
+}
