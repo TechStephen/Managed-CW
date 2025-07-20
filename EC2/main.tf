@@ -1,7 +1,7 @@
 resource "aws_instance" "main_ec2" {
-    ami           = "ami-0be5f59fbc80d980c"  # Example AMI ID, replace with a valid one
+    ami           = "ami-0150ccaf51ab55a51"  # Example AMI ID, replace with a valid one
     instance_type = "t2.micro"
-    security_groups = [aws_security_group.app_sg.name]
+    security_groups = [aws_security_group.app_sg.id]
     key_name      = aws_key_pair.my_kp.key_name
     subnet_id = var.subnet_id
     iam_instance_profile = var.instance_profile
@@ -24,6 +24,14 @@ resource "aws_instance" "main_ec2" {
         Name    = "MainEC2Instance"
     }
 }  
+
+# SSM Parameter store for CW Logs
+resource "aws_ssm_parameter" "cw_log_param" {
+  name  = "/AmazonCloudWatch-linux"
+  type  = "String"
+  value = file("${path.module}/cloudwatch-agent-config.json")
+  overwrite = true
+}
 
 # Create elastic IP
 resource "aws_eip" "main_eip" {
@@ -49,6 +57,7 @@ resource "local_file" "key_pair_file" {
 }
 
 resource "aws_security_group" "app_sg" {
+  vpc_id = var.vpc_id
   name = "app_sg"
   description = "Security group for EC2 instance"
 

@@ -1,4 +1,10 @@
 terraform {
+    #backend "s3" {
+    #    bucket         = "my-terraform-state-bucket"
+    #    key            = "terraform.tfstate"
+    #    region         = "us-east-1"
+    #    use_lockfile = true
+    #}
     required_providers {
         aws = {
         source  = "hashicorp/aws"
@@ -23,6 +29,7 @@ module "vpc" {
 
 module "ec2" {
     source = "./EC2"
+    vpc_id = module.vpc.vpc_id
     subnet_id = module.vpc.subnet_id
     instance_profile = module.IAM.iam_instance_profile
 
