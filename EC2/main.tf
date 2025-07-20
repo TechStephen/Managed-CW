@@ -1,7 +1,7 @@
 resource "aws_instance" "main_ec2" {
     ami           = "ami-0150ccaf51ab55a51"  # Example AMI ID, replace with a valid one
     instance_type = "t2.micro"
-    vpc_security_group_ids = [aws_security_group.app_sg.id]
+    security_groups = [aws_security_group.app_sg.id]
     key_name      = aws_key_pair.my_kp.key_name
     subnet_id = var.subnet_id
     iam_instance_profile = var.instance_profile
@@ -9,13 +9,18 @@ resource "aws_instance" "main_ec2" {
     user_data = <<-EOF
         #!/bin/bash
         sudo yum update -y
-        sudo yum install -g npm
-        sudo yum install -g pm2@latest
+        sudo su 
+        
+        # Install NPM and PM2
+        yum install npm
+        sudo npm install -g pm2@latest
 
+        # CloudWatch Agent setup - Install & Start
         sudo yum install -y amazon-cloudwatch-agent
         sudo systemctl enable amazon-cloudwatch-agent
         sudo systemctl start amazon-cloudwatch-agent
 
+        # Fetch CloudWatch Agent config from SSM
         sudo amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/AmazonCloudWatch-linux
     EOF
 

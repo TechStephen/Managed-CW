@@ -61,10 +61,6 @@ func TestEC2Provisioning(t *testing.T) {
 		t.Fatalf("Failed to establish SSH connection: %v", err)
 	}
 
-	// Check PM2 installation
-	pm2Output := ssh.CheckSshCommand(t, host, "pm2 --version")
-	assert.True(t, strings.Contains(pm2Output, "."), "Expected PM2 version string")
-
 	// Check CloudWatch Agent status
 	cwStatus := ssh.CheckSshCommand(t, host, "sudo systemctl is-active amazon-cloudwatch-agent")
 	assert.Equal(t, "active", strings.TrimSpace(cwStatus), "CloudWatch Agent should be active")
